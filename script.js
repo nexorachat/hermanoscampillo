@@ -1,9 +1,12 @@
+
+"use strict";
+
 const WHATSAPP_NUMBER = "34614353842";
 
+// Menú móvil
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
-// Menú para móviles.
 if (menuToggle && navLinks) {
   menuToggle.addEventListener("click", () => {
     const isOpen = navLinks.classList.toggle("open");
@@ -24,20 +27,21 @@ if (menuToggle && navLinks) {
   });
 }
 
-// Los botones de los servicios abren WhatsApp con el servicio indicado.
+// Botones de consulta de cada servicio
 document.querySelectorAll(".wa-service").forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
 
-    const title =
-      link.closest(".service-card")
-        ?.querySelector("h3")
-        ?.textContent
-        ?.trim() || "Consulta";
+    const card = link.closest(".service-card");
+    const title = card?.querySelector("h3")?.textContent?.trim()
+      || "Consulta sobre un servicio";
 
-    const message =
-      `Hola, quiero consultar sobre este servicio: ${title}. ` +
-      "¿Podrían darme más información?";
+    const message = [
+      "Hola, Hermanos Campillo.",
+      "",
+      `Quería consultar el siguiente servicio: ${title}.`,
+      "¿Podrían darme más información?"
+    ].join("\n");
 
     const url =
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -46,7 +50,7 @@ document.querySelectorAll(".wa-service").forEach((link) => {
   });
 });
 
-// Formulario de contacto: prepara el mensaje y lo abre en WhatsApp.
+// Formulario de contacto
 const contactForm = document.getElementById("contactForm");
 const formStatus = document.getElementById("formStatus");
 
@@ -66,12 +70,14 @@ if (contactForm) {
     const description = String(formData.get("message") || "").trim();
 
     const whatsappMessage = [
-      "Hola, quiero consultar un trabajo.",
+      "Hola, Hermanos Campillo. Quiero consultar un trabajo.",
       "",
       `Nombre: ${name}`,
       `Teléfono de contacto: ${phone}`,
       `Servicio solicitado: ${service}`,
-      `Descripción: ${description}`
+      "",
+      "Descripción del trabajo:",
+      description
     ].join("\n");
 
     const whatsappURL =
@@ -79,27 +85,32 @@ if (contactForm) {
 
     if (formStatus) {
       formStatus.textContent =
-        "Se abrirá WhatsApp para revisar el mensaje y enviarlo.";
+        "Abriendo WhatsApp. Revisa el mensaje y pulsa Enviar para remitir la consulta.";
     }
 
-    window.open(
+    const whatsappWindow = window.open(
       whatsappURL,
       "_blank",
       "noopener,noreferrer"
     );
+
+    // Si el navegador bloquea la nueva pestaña, abre WhatsApp en la actual.
+    if (!whatsappWindow) {
+      window.location.href = whatsappURL;
+    }
   });
 }
 
-// Animaciones al aparecer las secciones en pantalla.
+// Animaciones de entrada al desplazarse por la página
 const revealItems = document.querySelectorAll(".reveal");
 
 if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(
-    (entries, obs) => {
+    (entries, currentObserver) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
-          obs.unobserve(entry.target);
+          currentObserver.unobserve(entry.target);
         }
       });
     },
@@ -108,12 +119,10 @@ if ("IntersectionObserver" in window) {
 
   revealItems.forEach((item) => observer.observe(item));
 } else {
-  revealItems.forEach((item) => {
-    item.classList.add("is-visible");
-  });
+  revealItems.forEach((item) => item.classList.add("is-visible"));
 }
 
-// Año automático en el pie de página.
+// Año del pie de página
 const year = document.getElementById("year");
 
 if (year) {
